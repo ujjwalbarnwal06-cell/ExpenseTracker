@@ -8,26 +8,26 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#0d0d0f;color:#e8e8ea;min-height:100vh}
-/* Login screen */
 #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem}
 .login-box{background:#18181c;border:0.5px solid #2a2a30;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center}
 .login-logo{font-size:32px;margin-bottom:1rem}
-.login-title{font-size:20px;font-weight:500;color:#e8e8ea;margin-bottom:6px}
+.login-title{font-size:20px;font-weight:500;margin-bottom:6px}
 .login-sub{font-size:13px;color:#444;margin-bottom:2rem}
 .login-box input{background:#111;border:0.5px solid #333;border-radius:10px;padding:12px 16px;color:#e8e8ea;font-size:15px;outline:none;width:100%;text-align:center;letter-spacing:2px;margin-bottom:12px}
 .login-box input:focus{border-color:#7F77DD}
-.btn-login{width:100%;background:#7F77DD;border:none;border-radius:10px;padding:12px;color:#fff;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:8px}
+.btn-login{width:100%;background:#7F77DD;border:none;border-radius:10px;padding:12px;color:#fff;font-size:15px;font-weight:500;cursor:pointer}
 .btn-login:hover{background:#6a63c4}
-.login-error{font-size:13px;color:#f87171;min-height:20px;margin-top:4px}
-/* Dashboard */
+.login-error{font-size:13px;color:#f87171;min-height:20px;margin-top:6px}
 #dashboard{display:none;padding:1.5rem}
 h1{font-size:22px;font-weight:500}
 .sub{font-size:13px;color:#555;margin-top:3px}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;gap:10px;flex-wrap:wrap}
 .header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.btn-add{background:#7F77DD;border:none;border-radius:10px;padding:10px 20px;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
+.btn-add{background:#7F77DD;border:none;border-radius:10px;padding:10px 18px;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
 .btn-add:hover{background:#6a63c4}
-.btn-lock{border:0.5px solid #333;border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;background:transparent;display:flex;align-items:center;gap:5px}
+.btn-bulk{background:transparent;border:0.5px solid #7F77DD;border-radius:10px;padding:9px 18px;color:#7F77DD;font-size:14px;font-weight:500;cursor:pointer}
+.btn-bulk:hover{background:#7F77DD;color:#fff}
+.btn-lock{border:0.5px solid #333;border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;background:transparent}
 .btn-lock.locked{color:#555;border-color:#333}
 .btn-lock.locked:hover{border-color:#7F77DD;color:#7F77DD}
 .btn-lock.unlocked{color:#4ade80;border-color:#2a4a2a}
@@ -63,9 +63,11 @@ h1{font-size:22px;font-weight:500}
 .btn-icon{background:transparent;border:0.5px solid #2a2a30;border-radius:6px;padding:4px 8px;color:#666;cursor:pointer;font-size:11px}
 .btn-icon:hover{border-color:#7F77DD;color:#7F77DD}
 .btn-icon.del:hover{border-color:#f87171;color:#f87171}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:999}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:999;padding:1rem}
 .modal{background:#18181c;border-radius:16px;padding:1.5rem;width:100%;max-width:420px;border:0.5px solid #333;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:18px;font-weight:500;margin-bottom:1.25rem;color:#e8e8ea}
+.modal-wide{background:#18181c;border-radius:16px;padding:1.5rem;width:100%;max-width:900px;border:0.5px solid #333;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:500;margin-bottom:.5rem;color:#e8e8ea}
+.modal-sub{font-size:12px;color:#555;margin-bottom:1.25rem}
 .type-row{display:flex;gap:8px;margin-bottom:14px}
 .type-btn{flex:1;padding:9px;border-radius:8px;border:0.5px solid #333;cursor:pointer;font-size:14px;font-weight:500;background:#111;color:#666}
 .type-btn.active-exp{background:#3a1a1a;color:#f87171;border-color:#f87171}
@@ -88,12 +90,25 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 .btn-save:hover{background:#6a63c4}
 .empty{color:#333;font-size:14px;text-align:center;padding:3rem 1rem}
 .pin-error{text-align:center;font-size:13px;color:#f87171;min-height:20px;margin-top:6px}
+/* Bulk table */
+.bulk-table{width:100%;border-collapse:collapse;font-size:13px}
+.bulk-table th{color:#555;font-weight:500;padding:6px 6px 10px;text-align:left;border-bottom:0.5px solid #2a2a30;white-space:nowrap}
+.bulk-table td{padding:4px 4px}
+.bulk-table input,.bulk-table select{padding:7px 8px;font-size:12px;background:#111;border:0.5px solid #222;border-radius:6px}
+.bulk-table input:focus,.bulk-table select:focus{border-color:#7F77DD}
+.bulk-table select option{background:#18181c}
+.btn-row-del{background:transparent;border:none;color:#444;cursor:pointer;font-size:14px;padding:4px 6px}
+.btn-row-del:hover{color:#f87171}
+.btn-add-row{background:transparent;border:0.5px dashed #333;border-radius:8px;padding:8px;color:#555;font-size:13px;cursor:pointer;width:100%;margin-top:10px}
+.btn-add-row:hover{border-color:#7F77DD;color:#7F77DD}
+.bulk-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+.bulk-count{font-size:12px;color:#555;align-self:center;flex:1}
+.bulk-err{font-size:12px;color:#f87171;margin-top:6px}
 @media(max-width:640px){.cards{grid-template-columns:1fr 1fr}.card-val{font-size:18px}.charts{grid-template-columns:1fr}.header{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <div class="login-box">
     <div class="login-logo">💰</div>
@@ -105,13 +120,13 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   </div>
 </div>
 
-<!-- DASHBOARD (hidden until login) -->
 <div id="dashboard">
   <div class="header">
     <div><h1>Finance Dashboard</h1><p class="sub" id="modeSub">View only mode</p></div>
     <div class="header-right">
       <span class="badge view" id="modeBadge">View only</span>
       <button class="btn-lock locked" id="lockBtn" onclick="handleLock()">🔒 Unlock</button>
+      <button class="btn-bulk" id="bulkBtn" style="display:none" onclick="openBulk()">+ Bulk Add</button>
       <button class="btn-add" id="addBtn" style="display:none" onclick="openModal()">+ Add</button>
       <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
@@ -152,7 +167,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   </div>
 </div>
 
-<!-- EDIT PIN MODAL -->
+<!-- PIN MODAL -->
 <div class="overlay" id="pinOverlay" style="display:none" onclick="if(event.target===this)closePinModal()">
   <div class="modal" onclick="event.stopPropagation()" style="text-align:center;max-width:360px">
     <div class="modal-title" style="text-align:center">Enter edit PIN</div>
@@ -166,7 +181,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   </div>
 </div>
 
-<!-- ADD/EDIT TX MODAL -->
+<!-- SINGLE ADD/EDIT MODAL -->
 <div class="overlay" id="txOverlay" style="display:none" onclick="if(event.target===this)closeTxModal()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" id="modalTitle">Add transaction</div>
@@ -174,7 +189,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
       <button class="type-btn active-exp" id="btnExp" onclick="setType('expense')">Expense</button>
       <button class="type-btn" id="btnInc" onclick="setType('income')">Income</button>
     </div>
-    <div class="form-row"><label>Merchant / Title</label><input id="fTitle" placeholder="e.g. Zepto, Salary..."/></div>
+    <div class="form-row"><label>Title</label><input id="fTitle" placeholder="e.g. Zepto, Salary..."/></div>
     <div class="form-grid">
       <div><label>Amount (₹)</label><input id="fAmt" type="number" placeholder="0"/></div>
       <div><label>Date</label><input id="fDate" type="date"/></div>
@@ -192,7 +207,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
     </div>
     <div id="detailBox" style="display:none" class="form-row">
       <label>What exactly did you spend on?</label>
-      <textarea id="fDetail" placeholder="e.g. Bought groceries — rice, dal, vegetables..."></textarea>
+      <textarea id="fDetail" placeholder="e.g. Bought groceries..."></textarea>
     </div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeTxModal()">Cancel</button>
@@ -201,26 +216,55 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   </div>
 </div>
 
-<script>
-const VIEW_PASS = "hellopapa";   // <-- password to VIEW the site
-const OWNER_PIN = "246aB";   // <-- PIN to EDIT (can be different)
+<!-- BULK ADD MODAL -->
+<div class="overlay" id="bulkOverlay" style="display:none" onclick="if(event.target===this)closeBulk()">
+  <div class="modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-title">Bulk add transactions</div>
+    <div class="modal-sub">Fill in multiple rows at once — leave rows empty to skip them</div>
+    <div style="overflow-x:auto">
+      <table class="bulk-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Amount (₹)</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Detail (optional)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bulkBody"></tbody>
+      </table>
+    </div>
+    <button class="btn-add-row" onclick="addBulkRow()">+ Add row</button>
+    <div class="bulk-err" id="bulkErr"></div>
+    <div class="bulk-actions">
+      <span class="bulk-count" id="bulkCount"></span>
+      <button class="btn-cancel" style="flex:none;padding:9px 20px" onclick="closeBulk()">Cancel</button>
+      <button class="btn-save" style="flex:none;padding:9px 24px" onclick="saveBulk()">Save all</button>
+    </div>
+  </div>
+</div>
 
+<script>
+const VIEW_PASS="hellopapa";
+const OWNER_PIN="246aB";
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const CATS=["Food","Transport","Shopping","Entertainment","Health","Bills","Salary","Freelance","Transfer","Other"];
 const CAT_COLORS={Food:"#7F77DD",Transport:"#1D9E75",Shopping:"#D85A30",Entertainment:"#D4537E",Health:"#378ADD",Bills:"#BA7517",Salary:"#639922",Freelance:"#3266ad",Transfer:"#888780",Other:"#5a5a6a"};
 
 let txs=[],filter="All",editId=null,expanded=null,barChart=null,pieChart=null,isOwner=false;
 
-// ---- LOGIN ----
 function tryLogin(){
-  const v=document.getElementById("viewPassInput").value;
-  if(v===VIEW_PASS){
+  if(document.getElementById("viewPassInput").value===VIEW_PASS){
     document.getElementById("loginScreen").style.display="none";
     document.getElementById("dashboard").style.display="block";
     loadData();
   } else {
     document.getElementById("loginError").textContent="Wrong password. Try again.";
     document.getElementById("viewPassInput").value="";
-    document.getElementById("viewPassInput").focus();
   }
 }
 function logout(){
@@ -230,20 +274,17 @@ function logout(){
   document.getElementById("viewPassInput").value="";
   document.getElementById("loginError").textContent="";
 }
-
-// ---- DATA ----
 function loadData(){
-  try{const d=localStorage.getItem("fin_txs_v4");txs=d?JSON.parse(d):[];}
-  catch{txs=[];}
+  try{const d=localStorage.getItem("fin_txs_v4");txs=d?JSON.parse(d):[];}catch{txs=[];}
   render();
 }
 function save(){try{localStorage.setItem("fin_txs_v4",JSON.stringify(txs));}catch{}}
 function fmt(n){return"₹"+Math.abs(n).toLocaleString("en-IN");}
 
-// ---- OWNER MODE ----
 function setOwnerMode(on){
   isOwner=on;
   document.getElementById("addBtn").style.display=on?"inline-flex":"none";
+  document.getElementById("bulkBtn").style.display=on?"inline-flex":"none";
   document.getElementById("modeBadge").className="badge "+(on?"edit":"view");
   document.getElementById("modeBadge").textContent=on?"Edit mode":"View only";
   document.getElementById("modeSub").textContent=on?"You can add, edit and delete":"Viewing — read only";
@@ -254,7 +295,6 @@ function setOwnerMode(on){
 }
 function handleLock(){isOwner?setOwnerMode(false):openPinModal();}
 
-// ---- PIN MODAL ----
 function openPinModal(){
   document.getElementById("pinInput").value="";
   document.getElementById("pinError").textContent="";
@@ -263,16 +303,10 @@ function openPinModal(){
 }
 function closePinModal(){document.getElementById("pinOverlay").style.display="none";}
 function checkPin(){
-  if(document.getElementById("pinInput").value===OWNER_PIN){
-    closePinModal();setOwnerMode(true);
-  } else {
-    document.getElementById("pinError").textContent="Incorrect PIN. Try again.";
-    document.getElementById("pinInput").value="";
-    document.getElementById("pinInput").focus();
-  }
+  if(document.getElementById("pinInput").value===OWNER_PIN){closePinModal();setOwnerMode(true);}
+  else{document.getElementById("pinError").textContent="Incorrect PIN.";document.getElementById("pinInput").value="";}
 }
 
-// ---- RENDER ----
 function render(){
   const inc=txs.filter(t=>t.type==="income").reduce((a,t)=>a+t.amount,0);
   const exp=txs.filter(t=>t.type==="expense").reduce((a,t)=>a+t.amount,0);
@@ -327,7 +361,7 @@ function renderTxList(){
 function toggleExpand(id){expanded=expanded===id?null:id;renderTxList();}
 function setFilter(f,el){filter=f;document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));el.classList.add("active");renderTxList();}
 
-// ---- TX MODAL ----
+// Single modal
 let formType="expense";
 function setType(t){formType=t;document.getElementById("btnExp").className="type-btn"+(t==="expense"?" active-exp":"");document.getElementById("btnInc").className="type-btn"+(t==="income"?" active-inc":"");}
 function toggleDetail(){
@@ -337,8 +371,8 @@ function toggleDetail(){
 }
 function openModal(){
   if(!isOwner)return;editId=null;
-  document.getElementById("modalTitle").textContent="Add transaction";
-  setType("expense");document.getElementById("fTitle").value="";document.getElementById("fAmt").value="";
+  document.getElementById("modalTitle").textContent="Add transaction";setType("expense");
+  document.getElementById("fTitle").value="";document.getElementById("fAmt").value="";
   document.getElementById("fDate").value=new Date().toISOString().slice(0,10);
   document.getElementById("fCat").value="Food";document.getElementById("fDetail").value="";
   document.getElementById("detailBox").style.display="none";document.getElementById("detailArrow").className="detail-arrow";document.getElementById("detailLbl").textContent="+ Add detail";
@@ -363,6 +397,75 @@ function saveTx(){
   save();closeTxModal();render();
 }
 function deleteTx(id){if(!isOwner)return;if(confirm("Delete this transaction?")){txs=txs.filter(t=>t.id!==id);save();render();}}
+
+// ---- BULK ADD ----
+let bulkRowCount=0;
+function catOptions(sel){return CATS.map(c=>`<option${c===sel?" selected":""}>${c}</option>`).join("");}
+function addBulkRow(title="",amount="",date="",type="expense",cat="Food",detail=""){
+  bulkRowCount++;
+  const n=bulkRowCount;
+  const today=new Date().toISOString().slice(0,10);
+  const tbody=document.getElementById("bulkBody");
+  const tr=document.createElement("tr");
+  tr.id="brow_"+n;
+  tr.innerHTML=`
+    <td style="color:#444;font-size:12px;padding-right:4px">${n}</td>
+    <td><input placeholder="Title" value="${title}" id="bt_${n}"/></td>
+    <td><input type="number" placeholder="0" value="${amount}" id="ba_${n}" style="width:90px"/></td>
+    <td><input type="date" value="${date||today}" id="bd_${n}" style="width:130px"/></td>
+    <td>
+      <select id="btype_${n}" style="width:100px">
+        <option value="expense"${type==="expense"?" selected":""}>Expense</option>
+        <option value="income"${type==="income"?" selected":""}>Income</option>
+      </select>
+    </td>
+    <td><select id="bc_${n}" style="width:110px">${catOptions(cat)}</select></td>
+    <td><input placeholder="Optional detail" value="${detail}" id="bdet_${n}"/></td>
+    <td><button class="btn-row-del" onclick="removeBulkRow(${n})">✕</button></td>`;
+  tbody.appendChild(tr);
+  updateBulkCount();
+}
+function removeBulkRow(n){
+  const r=document.getElementById("brow_"+n);
+  if(r)r.remove();
+  updateBulkCount();
+}
+function updateBulkCount(){
+  const rows=document.getElementById("bulkBody").querySelectorAll("tr");
+  document.getElementById("bulkCount").textContent=rows.length+" row"+(rows.length!==1?"s":"");
+}
+function openBulk(){
+  if(!isOwner)return;
+  document.getElementById("bulkBody").innerHTML="";
+  bulkRowCount=0;
+  document.getElementById("bulkErr").textContent="";
+  // Start with 5 empty rows
+  for(let i=0;i<5;i++)addBulkRow();
+  document.getElementById("bulkOverlay").style.display="flex";
+}
+function closeBulk(){document.getElementById("bulkOverlay").style.display="none";}
+function saveBulk(){
+  const rows=document.getElementById("bulkBody").querySelectorAll("tr");
+  const newTxs=[];
+  let err=false;
+  rows.forEach(r=>{
+    const n=r.id.replace("brow_","");
+    const title=document.getElementById("bt_"+n).value.trim();
+    const amt=parseFloat(document.getElementById("ba_"+n).value);
+    const date=document.getElementById("bd_"+n).value;
+    const type=document.getElementById("btype_"+n).value;
+    const cat=document.getElementById("bc_"+n).value;
+    const detail=document.getElementById("bdet_"+n).value.trim();
+    if(!title&&!amt)return; // skip empty rows
+    if(!title||isNaN(amt)||amt<=0||!date){err=true;r.style.outline="0.5px solid #f87171";r.style.borderRadius="4px";return;}
+    r.style.outline="none";
+    newTxs.push({id:Date.now()+Math.random(),type,amount:amt,category:cat,date,title,detail});
+  });
+  if(err){document.getElementById("bulkErr").textContent="Some rows have missing info — please fill Title, Amount and Date.";return;}
+  if(!newTxs.length){document.getElementById("bulkErr").textContent="No valid rows to save.";return;}
+  txs=[...txs,...newTxs];
+  save();closeBulk();render();
+}
 </script>
 </body>
 </html>
