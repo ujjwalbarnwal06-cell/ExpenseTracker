@@ -7,17 +7,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#0d0d0f;color:#e8e8ea;min-height:100vh;padding:1.5rem}
+body{font-family:system-ui,sans-serif;background:#0d0d0f;color:#e8e8ea;min-height:100vh}
+/* Login screen */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem}
+.login-box{background:#18181c;border:0.5px solid #2a2a30;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center}
+.login-logo{font-size:32px;margin-bottom:1rem}
+.login-title{font-size:20px;font-weight:500;color:#e8e8ea;margin-bottom:6px}
+.login-sub{font-size:13px;color:#444;margin-bottom:2rem}
+.login-box input{background:#111;border:0.5px solid #333;border-radius:10px;padding:12px 16px;color:#e8e8ea;font-size:15px;outline:none;width:100%;text-align:center;letter-spacing:2px;margin-bottom:12px}
+.login-box input:focus{border-color:#7F77DD}
+.btn-login{width:100%;background:#7F77DD;border:none;border-radius:10px;padding:12px;color:#fff;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:8px}
+.btn-login:hover{background:#6a63c4}
+.login-error{font-size:13px;color:#f87171;min-height:20px;margin-top:4px}
+/* Dashboard */
+#dashboard{display:none;padding:1.5rem}
 h1{font-size:22px;font-weight:500}
 .sub{font-size:13px;color:#555;margin-top:3px}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;gap:10px;flex-wrap:wrap}
-.header-right{display:flex;align-items:center;gap:8px}
+.header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .btn-add{background:#7F77DD;border:none;border-radius:10px;padding:10px 20px;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
 .btn-add:hover{background:#6a63c4}
 .btn-lock{border:0.5px solid #333;border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;background:transparent;display:flex;align-items:center;gap:5px}
 .btn-lock.locked{color:#555;border-color:#333}
 .btn-lock.locked:hover{border-color:#7F77DD;color:#7F77DD}
 .btn-lock.unlocked{color:#4ade80;border-color:#2a4a2a}
+.btn-logout{border:0.5px solid #333;border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;background:transparent;color:#555}
+.btn-logout:hover{border-color:#f87171;color:#f87171}
 .badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
 .badge.view{background:#1a1a1a;color:#444;border:0.5px solid #222}
 .badge.edit{background:#1a3a1a;color:#4ade80;border:0.5px solid #2a4a2a}
@@ -72,81 +87,87 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 .btn-save{flex:2;background:#7F77DD;border:none;border-radius:8px;padding:10px;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
 .btn-save:hover{background:#6a63c4}
 .empty{color:#333;font-size:14px;text-align:center;padding:3rem 1rem}
-.pin-dots{display:flex;justify-content:center;gap:12px;margin:1.5rem 0}
-.pin-dot{width:14px;height:14px;border-radius:50%;border:0.5px solid #444;background:transparent;transition:background 0.15s}
-.pin-dot.filled{background:#7F77DD;border-color:#7F77DD}
-.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:1rem}
-.pin-btn{background:#111;border:0.5px solid #2a2a30;border-radius:10px;padding:14px;font-size:18px;color:#e8e8ea;cursor:pointer;font-weight:500}
-.pin-btn:hover{background:#1e1e24;border-color:#7F77DD}
-.pin-btn:active{background:#2a2a30}
-.pin-error{text-align:center;font-size:13px;color:#f87171;margin-top:8px;min-height:20px}
-.pin-hint{text-align:center;font-size:12px;color:#444;margin-bottom:1rem}
+.pin-error{text-align:center;font-size:13px;color:#f87171;min-height:20px;margin-top:6px}
 @media(max-width:640px){.cards{grid-template-columns:1fr 1fr}.card-val{font-size:18px}.charts{grid-template-columns:1fr}.header{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div><h1>Finance Dashboard</h1><p class="sub" id="modeSub">View only mode</p></div>
-  <div class="header-right">
-    <span class="badge view" id="modeBadge">View only</span>
-    <button class="btn-lock locked" id="lockBtn" onclick="handleLock()">🔒 Unlock</button>
-    <button class="btn-add" id="addBtn" style="display:none" onclick="openModal()">+ Add</button>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">💰</div>
+    <div class="login-title">Finance Dashboard</div>
+    <div class="login-sub">Enter password to view</div>
+    <input id="viewPassInput" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')tryLogin()"/>
+    <button class="btn-login" onclick="tryLogin()">Enter</button>
+    <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
-<div class="cards">
-  <div class="card"><div class="card-label">Total Balance</div><div class="card-val" id="bal">₹0</div></div>
-  <div class="card"><div class="card-label">Total Income</div><div class="card-val" style="color:#4ade80" id="inc">₹0</div></div>
-  <div class="card"><div class="card-label">Total Expenses</div><div class="card-val" style="color:#f87171" id="exp">₹0</div></div>
-</div>
-
-<div class="charts">
-  <div class="chart-box">
-    <div class="chart-title">Monthly overview — all 12 months</div>
-    <div class="legend-row">
-      <span class="legend-item"><span class="legend-dot" style="background:#4ade80"></span>Income</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#f87171"></span>Expenses</span>
-    </div>
-    <div style="position:relative;width:100%;height:220px;margin-top:8px"><canvas id="barChart"></canvas></div>
-  </div>
-  <div class="chart-box">
-    <div class="chart-title">Expenses by category</div>
-    <div style="position:relative;width:100%;height:160px"><canvas id="pieChart"></canvas></div>
-    <div class="legend-row" id="pieLegend"></div>
-  </div>
-</div>
-
-<div class="tx-section">
-  <div class="tx-header">
-    <div style="font-size:14px;font-weight:500;color:#aaa">Transactions</div>
-    <div class="filters">
-      <button class="chip active" onclick="setFilter('All',this)">All</button>
-      <button class="chip" onclick="setFilter('income',this)">Income</button>
-      <button class="chip" onclick="setFilter('expense',this)">Expenses</button>
+<!-- DASHBOARD (hidden until login) -->
+<div id="dashboard">
+  <div class="header">
+    <div><h1>Finance Dashboard</h1><p class="sub" id="modeSub">View only mode</p></div>
+    <div class="header-right">
+      <span class="badge view" id="modeBadge">View only</span>
+      <button class="btn-lock locked" id="lockBtn" onclick="handleLock()">🔒 Unlock</button>
+      <button class="btn-add" id="addBtn" style="display:none" onclick="openModal()">+ Add</button>
+      <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
   </div>
-  <div id="txList"></div>
+
+  <div class="cards">
+    <div class="card"><div class="card-label">Total Balance</div><div class="card-val" id="bal">₹0</div></div>
+    <div class="card"><div class="card-label">Total Income</div><div class="card-val" style="color:#4ade80" id="inc">₹0</div></div>
+    <div class="card"><div class="card-label">Total Expenses</div><div class="card-val" style="color:#f87171" id="exp">₹0</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-box">
+      <div class="chart-title">Monthly overview — all 12 months</div>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-dot" style="background:#4ade80"></span>Income</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#f87171"></span>Expenses</span>
+      </div>
+      <div style="position:relative;width:100%;height:220px;margin-top:8px"><canvas id="barChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Expenses by category</div>
+      <div style="position:relative;width:100%;height:160px"><canvas id="pieChart"></canvas></div>
+      <div class="legend-row" id="pieLegend"></div>
+    </div>
+  </div>
+
+  <div class="tx-section">
+    <div class="tx-header">
+      <div style="font-size:14px;font-weight:500;color:#aaa">Transactions</div>
+      <div class="filters">
+        <button class="chip active" onclick="setFilter('All',this)">All</button>
+        <button class="chip" onclick="setFilter('income',this)">Income</button>
+        <button class="chip" onclick="setFilter('expense',this)">Expenses</button>
+      </div>
+    </div>
+    <div id="txList"></div>
+  </div>
 </div>
 
-<!-- PIN Modal -->
-<div class="overlay" id="pinOverlay" style="display:none" onclick="handlePinOverlay(event)">
-  <div class="modal" onclick="event.stopPropagation()" style="text-align:center">
-    <div class="modal-title" id="pinTitle" style="text-align:center">Enter PIN to edit</div>
-    <div class="pin-hint" id="pinHint">Enter your 4-digit PIN</div>
-    <div style="margin:1.25rem 0">
-      <input id="pinInput" type="password" placeholder="Enter PIN" autocomplete="off" style="text-align:center;font-size:18px;letter-spacing:4px;padding:12px" onkeydown="if(event.key==='Enter')checkPin()"/>
-    </div>
+<!-- EDIT PIN MODAL -->
+<div class="overlay" id="pinOverlay" style="display:none" onclick="if(event.target===this)closePinModal()">
+  <div class="modal" onclick="event.stopPropagation()" style="text-align:center;max-width:360px">
+    <div class="modal-title" style="text-align:center">Enter edit PIN</div>
+    <div style="font-size:13px;color:#444;margin-bottom:1rem">Only the owner can edit</div>
+    <input id="pinInput" type="password" placeholder="Enter PIN" autocomplete="off" style="text-align:center;font-size:16px;letter-spacing:3px" onkeydown="if(event.key==='Enter')checkPin()"/>
     <div class="pin-error" id="pinError"></div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn-cancel" style="flex:1" onclick="closePinModal()">Cancel</button>
-      <button class="btn-save" style="flex:1" onclick="checkPin()">Unlock</button>
+    <div class="modal-btns" style="margin-top:14px">
+      <button class="btn-cancel" onclick="closePinModal()">Cancel</button>
+      <button class="btn-save" onclick="checkPin()">Unlock</button>
     </div>
   </div>
 </div>
 
-<!-- Add/Edit Transaction Modal -->
-<div class="overlay" id="txOverlay" style="display:none" onclick="handleTxOverlay(event)">
+<!-- ADD/EDIT TX MODAL -->
+<div class="overlay" id="txOverlay" style="display:none" onclick="if(event.target===this)closeTxModal()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title" id="modalTitle">Add transaction</div>
     <div class="type-row">
@@ -181,14 +202,37 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 </div>
 
 <script>
+const VIEW_PASS = "hellopapa";   // <-- password to VIEW the site
+const OWNER_PIN = "246aB";   // <-- PIN to EDIT (can be different)
+
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const CAT_COLORS={Food:"#7F77DD",Transport:"#1D9E75",Shopping:"#D85A30",Entertainment:"#D4537E",Health:"#378ADD",Bills:"#BA7517",Salary:"#639922",Freelance:"#3266ad",Transfer:"#888780",Other:"#5a5a6a"};
-const OWNER_PIN="246Uj";
 
-let txs=[],filter="All",editId=null,expanded=null,barChart=null,pieChart=null;
-let isOwner=false,pinBuffer="",settingPin=false;
+let txs=[],filter="All",editId=null,expanded=null,barChart=null,pieChart=null,isOwner=false;
 
-function load(){
+// ---- LOGIN ----
+function tryLogin(){
+  const v=document.getElementById("viewPassInput").value;
+  if(v===VIEW_PASS){
+    document.getElementById("loginScreen").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    loadData();
+  } else {
+    document.getElementById("loginError").textContent="Wrong password. Try again.";
+    document.getElementById("viewPassInput").value="";
+    document.getElementById("viewPassInput").focus();
+  }
+}
+function logout(){
+  isOwner=false;
+  document.getElementById("dashboard").style.display="none";
+  document.getElementById("loginScreen").style.display="flex";
+  document.getElementById("viewPassInput").value="";
+  document.getElementById("loginError").textContent="";
+}
+
+// ---- DATA ----
+function loadData(){
   try{const d=localStorage.getItem("fin_txs_v4");txs=d?JSON.parse(d):[];}
   catch{txs=[];}
   render();
@@ -196,6 +240,7 @@ function load(){
 function save(){try{localStorage.setItem("fin_txs_v4",JSON.stringify(txs));}catch{}}
 function fmt(n){return"₹"+Math.abs(n).toLocaleString("en-IN");}
 
+// ---- OWNER MODE ----
 function setOwnerMode(on){
   isOwner=on;
   document.getElementById("addBtn").style.display=on?"inline-flex":"none";
@@ -207,27 +252,19 @@ function setOwnerMode(on){
   lb.textContent=on?"🔓 Lock":"🔒 Unlock";
   renderTxList();
 }
+function handleLock(){isOwner?setOwnerMode(false):openPinModal();}
 
-function handleLock(){
-  if(isOwner){setOwnerMode(false);}
-  else{openPinModal();}
-}
-
-// PIN Modal
+// ---- PIN MODAL ----
 function openPinModal(){
-  document.getElementById("pinTitle").textContent="Enter PIN to edit";
-  document.getElementById("pinHint").textContent="Enter your PIN";
+  document.getElementById("pinInput").value="";
   document.getElementById("pinError").textContent="";
   document.getElementById("pinOverlay").style.display="flex";
   setTimeout(()=>document.getElementById("pinInput").focus(),100);
 }
-function closePinModal(){document.getElementById("pinOverlay").style.display="none";document.getElementById("pinInput").value="";}
-function handlePinOverlay(e){if(e.target===document.getElementById("pinOverlay"))closePinModal();}
+function closePinModal(){document.getElementById("pinOverlay").style.display="none";}
 function checkPin(){
-  const val=document.getElementById("pinInput").value;
-  if(val===OWNER_PIN){
-    closePinModal();
-    setOwnerMode(true);
+  if(document.getElementById("pinInput").value===OWNER_PIN){
+    closePinModal();setOwnerMode(true);
   } else {
     document.getElementById("pinError").textContent="Incorrect PIN. Try again.";
     document.getElementById("pinInput").value="";
@@ -235,7 +272,7 @@ function checkPin(){
   }
 }
 
-// Charts
+// ---- RENDER ----
 function render(){
   const inc=txs.filter(t=>t.type==="income").reduce((a,t)=>a+t.amount,0);
   const exp=txs.filter(t=>t.type==="expense").reduce((a,t)=>a+t.amount,0);
@@ -243,40 +280,30 @@ function render(){
   document.getElementById("inc").textContent=fmt(inc);
   document.getElementById("exp").textContent=fmt(exp);
   const bel=document.getElementById("bal");
-  bel.textContent=fmt(bal);
-  bel.style.color=bal>=0?"#4ade80":"#f87171";
+  bel.textContent=fmt(bal);bel.style.color=bal>=0?"#4ade80":"#f87171";
   renderBarChart();renderPieChart();renderTxList();
 }
-
 function renderBarChart(){
-  const incD=MONTHS.map((_,i)=>txs.filter(t=>t.type==="income"&&parseInt(t.date.slice(5,7))===i+1).reduce((a,t)=>a+t.amount,0));
-  const expD=MONTHS.map((_,i)=>txs.filter(t=>t.type==="expense"&&parseInt(t.date.slice(5,7))===i+1).reduce((a,t)=>a+t.amount,0));
+  const iD=MONTHS.map((_,i)=>txs.filter(t=>t.type==="income"&&parseInt(t.date.slice(5,7))===i+1).reduce((a,t)=>a+t.amount,0));
+  const eD=MONTHS.map((_,i)=>txs.filter(t=>t.type==="expense"&&parseInt(t.date.slice(5,7))===i+1).reduce((a,t)=>a+t.amount,0));
   if(barChart)barChart.destroy();
-  barChart=new Chart(document.getElementById("barChart"),{
-    type:"bar",data:{labels:MONTHS,datasets:[
-      {label:"Income",data:incD,backgroundColor:"#4ade80",borderRadius:3},
-      {label:"Expenses",data:expD,backgroundColor:"#f87171",borderRadius:3}
-    ]},
+  barChart=new Chart(document.getElementById("barChart"),{type:"bar",
+    data:{labels:MONTHS,datasets:[{label:"Income",data:iD,backgroundColor:"#4ade80",borderRadius:3},{label:"Expenses",data:eD,backgroundColor:"#f87171",borderRadius:3}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.raw.toLocaleString("en-IN")}}},
       scales:{x:{ticks:{color:"#555",font:{size:11}},grid:{color:"rgba(255,255,255,0.04)"},border:{color:"transparent"}},
-              y:{ticks:{color:"#555",font:{size:10},callback:v=>v>=1000?"₹"+(v/1000).toFixed(0)+"k":"₹"+v},grid:{color:"rgba(255,255,255,0.04)"},border:{color:"transparent"}}}}
-  });
+              y:{ticks:{color:"#555",font:{size:10},callback:v=>v>=1000?"₹"+(v/1000).toFixed(0)+"k":"₹"+v},grid:{color:"rgba(255,255,255,0.04)"},border:{color:"transparent"}}}}});
 }
-
 function renderPieChart(){
-  const map={};
-  txs.filter(t=>t.type==="expense").forEach(t=>{map[t.category]=(map[t.category]||0)+t.amount;});
+  const map={};txs.filter(t=>t.type==="expense").forEach(t=>{map[t.category]=(map[t.category]||0)+t.amount;});
   const entries=Object.entries(map).sort((a,b)=>b[1]-a[1]);
   if(!entries.length){if(pieChart){pieChart.destroy();pieChart=null;}document.getElementById("pieLegend").innerHTML="";return;}
   const labels=entries.map(e=>e[0]),data=entries.map(e=>e[1]),colors=labels.map(l=>CAT_COLORS[l]||"#888");
   if(pieChart)pieChart.destroy();
-  pieChart=new Chart(document.getElementById("pieChart"),{
-    type:"doughnut",data:{labels,datasets:[{data,backgroundColor:colors,borderColor:"#0d0d0f",borderWidth:2,hoverOffset:4}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"60%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.raw.toLocaleString("en-IN")}}}}
-  });
+  pieChart=new Chart(document.getElementById("pieChart"),{type:"doughnut",
+    data:{labels,datasets:[{data,backgroundColor:colors,borderColor:"#0d0d0f",borderWidth:2,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"60%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"₹"+c.raw.toLocaleString("en-IN")}}}}});
   document.getElementById("pieLegend").innerHTML=labels.slice(0,6).map(l=>`<span class="legend-item"><span class="legend-dot" style="background:${CAT_COLORS[l]||'#888'}"></span>${l}</span>`).join("");
 }
-
 function renderTxList(){
   const sorted=[...txs].sort((a,b)=>new Date(b.date)-new Date(a.date)||b.id-a.id).filter(t=>filter==="All"||t.type===filter);
   const el=document.getElementById("txList");
@@ -293,71 +320,42 @@ function renderTxList(){
       </div>
       <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
         <span class="tx-amt" style="color:${t.type==="income"?"#4ade80":"#f87171"}">${t.type==="income"?"+":"-"}${fmt(t.amount)}</span>
-        ${isOwner?`<button class="btn-icon" onclick="event.stopPropagation();openEdit(${t.id})">Edit</button>
-        <button class="btn-icon del" onclick="event.stopPropagation();deleteTx(${t.id})">Del</button>`:""}
+        ${isOwner?`<button class="btn-icon" onclick="event.stopPropagation();openEdit(${t.id})">Edit</button><button class="btn-icon del" onclick="event.stopPropagation();deleteTx(${t.id})">Del</button>`:""}
       </div>
     </div>`).join("");
 }
-
 function toggleExpand(id){expanded=expanded===id?null:id;renderTxList();}
 function setFilter(f,el){filter=f;document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));el.classList.add("active");renderTxList();}
 
-// Tx Modal
+// ---- TX MODAL ----
 let formType="expense";
-function setType(t){
-  formType=t;
-  document.getElementById("btnExp").className="type-btn"+(t==="expense"?" active-exp":"");
-  document.getElementById("btnInc").className="type-btn"+(t==="income"?" active-inc":"");
-}
+function setType(t){formType=t;document.getElementById("btnExp").className="type-btn"+(t==="expense"?" active-exp":"");document.getElementById("btnInc").className="type-btn"+(t==="income"?" active-inc":"");}
 function toggleDetail(){
   const box=document.getElementById("detailBox"),arr=document.getElementById("detailArrow"),lbl=document.getElementById("detailLbl");
-  const open=box.style.display==="none";
-  box.style.display=open?"block":"none";
-  arr.className="detail-arrow"+(open?" open":"");
-  lbl.textContent=open?"- Hide detail":"+ Add detail";
+  const open=box.style.display==="none";box.style.display=open?"block":"none";
+  arr.className="detail-arrow"+(open?" open":"");lbl.textContent=open?"- Hide detail":"+ Add detail";
 }
 function openModal(){
-  if(!isOwner)return;
-  editId=null;
+  if(!isOwner)return;editId=null;
   document.getElementById("modalTitle").textContent="Add transaction";
-  setType("expense");
-  document.getElementById("fTitle").value="";
-  document.getElementById("fAmt").value="";
+  setType("expense");document.getElementById("fTitle").value="";document.getElementById("fAmt").value="";
   document.getElementById("fDate").value=new Date().toISOString().slice(0,10);
-  document.getElementById("fCat").value="Food";
-  document.getElementById("fDetail").value="";
-  document.getElementById("detailBox").style.display="none";
-  document.getElementById("detailArrow").className="detail-arrow";
-  document.getElementById("detailLbl").textContent="+ Add detail";
+  document.getElementById("fCat").value="Food";document.getElementById("fDetail").value="";
+  document.getElementById("detailBox").style.display="none";document.getElementById("detailArrow").className="detail-arrow";document.getElementById("detailLbl").textContent="+ Add detail";
   document.getElementById("txOverlay").style.display="flex";
 }
 function openEdit(id){
-  if(!isOwner)return;
-  const t=txs.find(x=>x.id===id);if(!t)return;
-  editId=id;
-  document.getElementById("modalTitle").textContent="Edit transaction";
-  setType(t.type);formType=t.type;
-  document.getElementById("fTitle").value=t.title;
-  document.getElementById("fAmt").value=t.amount;
-  document.getElementById("fDate").value=t.date;
-  document.getElementById("fCat").value=t.category;
-  document.getElementById("fDetail").value=t.detail||"";
-  if(t.detail){
-    document.getElementById("detailBox").style.display="block";
-    document.getElementById("detailArrow").className="detail-arrow open";
-    document.getElementById("detailLbl").textContent="- Hide detail";
-  } else {
-    document.getElementById("detailBox").style.display="none";
-    document.getElementById("detailArrow").className="detail-arrow";
-    document.getElementById("detailLbl").textContent="+ Add detail";
-  }
+  if(!isOwner)return;const t=txs.find(x=>x.id===id);if(!t)return;editId=id;
+  document.getElementById("modalTitle").textContent="Edit transaction";setType(t.type);formType=t.type;
+  document.getElementById("fTitle").value=t.title;document.getElementById("fAmt").value=t.amount;
+  document.getElementById("fDate").value=t.date;document.getElementById("fCat").value=t.category;document.getElementById("fDetail").value=t.detail||"";
+  if(t.detail){document.getElementById("detailBox").style.display="block";document.getElementById("detailArrow").className="detail-arrow open";document.getElementById("detailLbl").textContent="- Hide detail";}
+  else{document.getElementById("detailBox").style.display="none";document.getElementById("detailArrow").className="detail-arrow";document.getElementById("detailLbl").textContent="+ Add detail";}
   document.getElementById("txOverlay").style.display="flex";
 }
 function closeTxModal(){document.getElementById("txOverlay").style.display="none";editId=null;}
-function handleTxOverlay(e){if(e.target===document.getElementById("txOverlay"))closeTxModal();}
 function saveTx(){
-  const title=document.getElementById("fTitle").value.trim();
-  const amt=parseFloat(document.getElementById("fAmt").value);
+  const title=document.getElementById("fTitle").value.trim(),amt=parseFloat(document.getElementById("fAmt").value);
   if(!title||isNaN(amt)||amt<=0)return;
   const tx={id:editId||Date.now(),type:formType,amount:amt,category:document.getElementById("fCat").value,
             date:document.getElementById("fDate").value,title,detail:document.getElementById("fDetail").value.trim()};
@@ -365,8 +363,6 @@ function saveTx(){
   save();closeTxModal();render();
 }
 function deleteTx(id){if(!isOwner)return;if(confirm("Delete this transaction?")){txs=txs.filter(t=>t.id!==id);save();render();}}
-
-load();
 </script>
 </body>
 </html>
